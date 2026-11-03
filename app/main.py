@@ -14,6 +14,7 @@ from app.cache import caching_cost
 from app.guard import scan
 from app.reasoning import extract_answer, majority_vote
 from app.sampling import distribution, entropy_bits
+from app.security import deep_scan, exfil_links
 from app.templates import Example, FewShotPrompt, PromptTemplate, TemplateError, select_examples
 from app.tokens import estimate_tokens, train_bpe
 
@@ -137,6 +138,23 @@ def vote(body: VoteIn) -> dict[str, object]:
 def guard_scan(body: TextIn) -> dict[str, object]:
     matches = scan(body.text)
     return {"suspicious": bool(matches), "matches": matches}
+
+
+class LinksIn(BaseModel):
+    text: str
+    allowed_domains: list[str] = Field(default_factory=list)
+
+
+@app.post("/guard/deep-scan")
+def guard_deep_scan(body: TextIn) -> dict[str, object]:
+    matches = deep_scan(body.text)
+    return {"suspicious": bool(matches), "matches": matches}
+
+
+@app.post("/guard/links")
+def guard_links(body: LinksIn) -> dict[str, object]:
+    blocked = exfil_links(body.text, body.allowed_domains)
+    return {"blocked": blocked, "safe": not blocked}
 
 
 @app.post("/cache/savings")
