@@ -31,3 +31,19 @@ env/
 venv/
 ENV/
 prompts_cache/
+
+# Merged from the learn-angular standard template
+.venv/
+.ruff_cache/
+.ipynb_checkpoints/
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+.DS_Store
+Thumbs.db
+# Env files (never commit secrets)
+.env.*
+!.env.example
